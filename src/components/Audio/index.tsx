@@ -18,7 +18,14 @@ const Audio = forwardRef<AudioRef, AudioProps>((props, ref) => {
   }));
 
   const playAudio = () => {
-    audioRef.current?.play();
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // Reset audio to beginning and load it again to ensure it plays
+    audio.currentTime = 0;
+    audio.load();
+    // Silently handle play errors (e.g., if audio is not ready)
+    audio.play().catch(() => {});
   };
 
   return <audio ref={audioRef} src={src} />;

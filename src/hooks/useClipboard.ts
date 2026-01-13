@@ -1,4 +1,4 @@
-import { useMount } from "ahooks";
+import { useMount, useUnmount } from "ahooks";
 import { cloneDeep } from "es-toolkit";
 import { isEmpty, remove } from "es-toolkit/compat";
 import { nanoid } from "nanoid";
@@ -6,6 +6,7 @@ import {
   type ClipboardChangeOptions,
   onClipboardChange,
   startListening,
+  stopListening,
 } from "tauri-plugin-clipboard-x-api";
 import { fullName } from "tauri-plugin-fs-pro-api";
 import {
@@ -102,5 +103,9 @@ export const useClipboard = (
 
       insertHistory(sqlData);
     }, options);
+  });
+
+  useUnmount(async () => {
+    await stopListening();
   });
 };
