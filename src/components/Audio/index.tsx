@@ -1,3 +1,4 @@
+import { error } from "@tauri-apps/plugin-log";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import copyAudio from "@/assets/audio/copy.mp3";
 
@@ -18,7 +19,16 @@ const Audio = forwardRef<AudioRef, AudioProps>((props, ref) => {
   }));
 
   const playAudio = () => {
-    audioRef.current?.play();
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // Reset audio to beginning and load it again to ensure it plays
+    audio.currentTime = 0;
+    audio.load();
+    // Handle play errors (e.g., if audio is not ready)
+    audio.play().catch((err) => {
+      error(`Failed to play copy audio: ${err}`);
+    });
   };
 
   return <audio ref={audioRef} src={src} />;
